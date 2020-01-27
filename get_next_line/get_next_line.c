@@ -1,70 +1,70 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbari <mbari@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/23 23:35:09 by mbari             #+#    #+#             */
-/*   Updated: 2020/01/23 23:35:12 by mbari            ###   ########.fr       */
+/*   Created: 2020/01/23 23:34:15 by mbari             #+#    #+#             */
+/*   Updated: 2020/01/24 19:54:54 by mbari            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line_bonus.h"
+#include "get_next_line.h"
 
-int				get_line(char **rem, int n, char **line, int fd)
+int				get_line(char **str, int n, char **line, int fd)
 {
-	char		*temp;
-	int			i;
+	char	*temp;
+	int		i;
 
 	i = 0;
-	while (rem[fd][i] && rem[fd][i] != '\n')
+	while (str[fd][i] && str[fd][i] != '\n')
 		i++;
-	*line = ft_substr(rem[fd], 0, i);
-	if (!rem[fd][i])
+	*line = ft_substr(str[fd], 0, i);
+	if (!str[fd][i])
 	{
-		temp = rem[fd];
-		rem[fd] = NULL;
+		temp = str[fd];
+		str[fd] = NULL;
 		free(temp);
 		return (0);
 	}
 	else
 	{
-		temp = rem[fd];
-		rem[fd] = ft_strdup((rem[fd]) + i + 1);
+		temp = str[fd];
+		str[fd] = ft_strdup((str[fd]) + i + 1);
 		free(temp);
 	}
-	if (!rem[fd] || !*line)
+	if (!str[fd] || !*line)
 		return (-1);
-	if (n || (n == 0 && rem[fd] != NULL))
+	if (n || (n == 0 && str[fd] != NULL))
 		return (1);
 	return (-1);
 }
 
 int				get_next_line(int fd, char **line)
 {
-	char				*buf;
-	static char			*rem[4864];
-	char				*temp;
-	int					n;
+	char			*buf;
+	static char		*str[4864];
+	char			*temp;
+	int				n;
 
 	buf = NULL;
 	if (!line || fd < 0 || fd >= 4864 || BUFFER_SIZE <= 0
 			|| !(buf = malloc(BUFFER_SIZE + 1)) || read(fd, buf, 0) == -1)
 		return (-1);
-	if (!rem[fd])
-		if (!(rem[fd] = ft_strdup("")))
+	if (!str[fd])
+		if (!(str[fd] = ft_strdup("")))
 			return (-1);
 	while ((n = read(fd, buf, BUFFER_SIZE)))
 	{
-		temp = rem[fd];
+		temp = str[fd];
 		buf[n] = '\0';
-		if (!(rem[fd] = ft_strjoin(rem[fd], buf)))
+		if (!(str[fd] = ft_strjoin(str[fd], buf)))
 			return (-1);
 		free(temp);
-		if (ft_strchr(rem[fd], '\n') != 0)
+		if (ft_strchr(str[fd], '\n') != NULL)
 			break ;
 	}
 	free(buf);
-	return (get_line(rem, n, line, fd));
+	return (get_line(str, n, line, fd));
 }
